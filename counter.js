@@ -1,7 +1,8 @@
 let obj = { counter: 0 }
-let btn = document.querySelector('#counter')
+let btn = ''
 
 export function setupCounter() {
+  btn = document.querySelector('#counter')
   btn.addEventListener('click', () => obj.counter++)
 }
 
