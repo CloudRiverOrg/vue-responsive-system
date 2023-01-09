@@ -30,6 +30,14 @@ export function setupCounter() {
 }
 
 export function setBtnText() {
+  console.log('DOM: setBtnText');
   btn.innerHTML = `count is ${objRes.counter}`
 }
 
+setTimeout(() => {
+  // 每次执行赋值 DOM: setBtnText被打印一次
+  objRes.a = 1
+  objRes.b = 1
+  objRes.c = 1
+  objRes.d = 1
+})
