@@ -3,15 +3,22 @@ let btn = ''
 
 const effectFnSet = new Set()
 
+let currentEffect 
+function registerCurrentEffect(fn) {
+  currentEffect = fn
+  fn()
+}
+const effect = registerCurrentEffect
+
 const objRes = new Proxy(obj, {
   get(target, key) {
-    // ??? add -> setBtnText 粗鲁撒
-    effectFnSet.add(setBtnText)
+    // 现在收集依赖固定函数名的耦合解除了 
+    currentEffect && effectFnSet.add(currentEffect)
     return target[key]
   },
   set(target, key, newVal) {
-    effectFnSet.forEach(fn => fn())
     target[key] = newVal
+    effectFnSet.forEach(fn => fn())
     return true
   }
 })
@@ -19,6 +26,7 @@ const objRes = new Proxy(obj, {
 export function setupCounter() {
   btn = document.querySelector('#counter')
   btn.addEventListener('click', () => objRes.counter++)
+  effect(setBtnText)
 }
 
 export function setBtnText() {
