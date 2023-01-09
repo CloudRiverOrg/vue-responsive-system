@@ -5,6 +5,7 @@ const effectFnSet = new Set()
 
 const objRes = new Proxy(obj, {
   get(target, key) {
+    // ??? add -> setBtnText 粗鲁撒
     effectFnSet.add(setBtnText)
     return target[key]
   },
