@@ -1,9 +1,14 @@
-export function setupCounter(element) {
-  let counter = 0
-  const setCounter = (count) => {
-    counter = count
-    element.innerHTML = `count is ${counter}`
-  }
-  element.addEventListener('click', () => setCounter(counter + 1))
-  setCounter(0)
+let obj = { counter: 0 }
+let btn = document.querySelector('#counter')
+
+export function setupCounter() {
+  btn.addEventListener('click', () => obj.counter++)
+}
+
+export function setBtnText() {
+  btn.innerHTML = `count is ${obj.counter}`
+}
+
+function effect () {
+  // 结果 按钮点击后 触发 obj.counter++, 按钮内的内容文本自动更新
 }
