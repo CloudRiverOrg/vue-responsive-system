@@ -1,4 +1,4 @@
-let obj = { counter: 0 }
+let obj = { counter: 0, disabled: false }
 let btn = ''
 
 const bucket = new WeakMap()
@@ -44,18 +44,18 @@ const objRes = new Proxy(obj, {
 
 export function setupCounter() {
   btn = document.querySelector('#counter')
-  btn.addEventListener('click', () => objRes.counter++)
+  btn.addEventListener('click', () => {
+    objRes.counter++
+    if (objRes.counter > 10 && !objRes.disabled) {
+      objRes.disabled = true
+    }
+  })
   effect(setBtnText)
 }
 
 export function setBtnText() {
-  btn.innerHTML = `count is ${objRes.counter}`
+  // 当 objRes.disabled 为 true 时， counter的变更应该不触发 setBtnText
+  btn.innerHTML = objRes.disabled ? 'disabled' : `count is ${objRes.counter}`
   console.log('DOM: setBtnText', bucket);
 }
 
-setTimeout(() => {
-  objRes.a = 1
-  objRes.b = 1
-  objRes.c = 1
-  objRes.d = 1
-})
