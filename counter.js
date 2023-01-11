@@ -4,7 +4,7 @@ let btn = ''
 const bucket = new WeakMap()
 
 let currentEffect 
-
+let effectStack = []
 function clearUp (proxyFn) {
   proxyFn.deps.forEach(depsSetData => {
     // set 相比 array 更有优势
@@ -20,7 +20,11 @@ function effect(fn) {
   let proxyFn = () => { 
     clearUp(proxyFn)
     currentEffect = proxyFn
+    effectStack.push(proxyFn)
     fn()
+    effectStack.pop(proxyFn)
+    currentEffect = effectStack[effectStack.length - 1]
+
   }
   proxyFn.deps = []
   proxyFn()
@@ -85,9 +89,9 @@ export function setupCounter() {
 
 export function setBtnText() {
   
-  btn.innerHTML = `count is ${objRes.counter}`
+  // btn.innerHTML = `count is ${objRes.counter}`
   console.log('Render: setBtnText', bucket);
-  
+  // diff 不更新 子组件，不是本次的重点
   // 嵌套了
   effect(function setInputValue() {
     console.log('Render: setInputValue', bucket);
@@ -96,5 +100,6 @@ export function setBtnText() {
   })
   
   // 当 88行放99行的时候神奇的事情发生了
+  btn.innerHTML = `count is ${objRes.counter}`
 }
 
