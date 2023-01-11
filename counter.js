@@ -1,4 +1,4 @@
-let obj = { counter: 0, disabled: false }
+let obj = { counter: 0, disabled: false, inputVal: 990 }
 let btn = ''
 
 const bucket = new WeakMap()
@@ -9,7 +9,7 @@ function clearUp (proxyFn) {
   proxyFn.deps.forEach(depsSetData => {
     // set 相比 array 更有优势
     depsSetData.delete(proxyFn)
-    console.log('clearUp', depsSetData);
+    // console.log('clearUp', depsSetData);
   })
   // 不清空会越来越多
   proxyFn.deps.length = 0
@@ -63,8 +63,8 @@ const objRes = new Proxy(obj, {
   },
   set(target, key, newVal) {
     target[key] = newVal
-    trigger(target, key)
     console.log('Proxy.set', key);
+    trigger(target, key)
     return true
   }
 })
@@ -75,17 +75,26 @@ export function setupCounter() {
   btn.addEventListener('click', () => {
     counterCache++
     objRes.counter = counterCache
-    if (Math.random() > 0.6 && !disabledCache) {
-      objRes.disabled = true
-      disabledCache = true
-    }
+    // if (Math.random() > 0.6 && !disabledCache) {
+    //   objRes.disabled = true
+    //   disabledCache = true
+    // }
   })
   effect(setBtnText)
 }
 
 export function setBtnText() {
-  // 当 objRes.disabled 为 true 时， counter的变更应该不触发 setBtnText
-  btn.innerHTML = objRes.disabled ? 'disabled' : `count is ${objRes.counter}`
-  console.log('DOM: setBtnText', bucket);
+  
+  btn.innerHTML = `count is ${objRes.counter}`
+  console.log('Render: setBtnText', bucket);
+  
+  // 嵌套了
+  effect(function setInputValue() {
+    console.log('Render: setInputValue', bucket);
+    let input = document.querySelector('#inputEl')
+    input.value = objRes.inputVal
+  })
+  
+  // 当 88行放99行的时候神奇的事情发生了
 }
 
