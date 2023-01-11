@@ -1,3 +1,5 @@
+import { executeJob, jobs } from "./job-queue"
+
 let obj = { counter: 0, disabled: false, inputVal: 990 }
 let btn = ''
 
@@ -84,14 +86,17 @@ export function setupCounter() {
   btn.addEventListener('click', () => {
     counterCache++
     objRes.counter = counterCache
-    // objRes.counter = counterCache
-    // objRes.counter = counterCache
-    // objRes.counter = counterCache
-    // objRes.counter = counterCache
+    objRes.counter = counterCache
+    objRes.counter = counterCache
+    objRes.counter = counterCache
+    objRes.counter = counterCache
     console.log('click over');
   })
   effect(setBtnText, {
-    scheduler: (fn)=> { Promise.resolve().then(() => fn()) }
+    scheduler: (fn)=> { 
+      jobs.add(fn)
+      executeJob()
+    }
   })
 }
 
