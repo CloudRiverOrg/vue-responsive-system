@@ -45,7 +45,6 @@ function track(target, key) {
   }
 
   deps.add(currentEffect)
-  // push(target, key)
   currentEffect.deps.push(deps)
 }
 
@@ -54,7 +53,11 @@ function trigger(target, key) {
   if (deps) {
     // 避免在循环中的时候 set里面又进行了插入操作，导致无限循环
     let depsToRun = new Set(deps)
-    depsToRun.forEach(fn => fn())
+
+    depsToRun.forEach(fn => {
+      fn !== currentEffect && 
+      fn()
+    })
   }
 }
 
@@ -73,33 +76,17 @@ const objRes = new Proxy(obj, {
   }
 })
 let counterCache = 0
-let disabledCache = false
 export function setupCounter() {
   btn = document.querySelector('#counter')
   btn.addEventListener('click', () => {
     counterCache++
     objRes.counter = counterCache
-    // if (Math.random() > 0.6 && !disabledCache) {
-    //   objRes.disabled = true
-    //   disabledCache = true
-    // }
   })
   effect(setBtnText)
 }
 
 export function setBtnText() {
-  
-  // btn.innerHTML = `count is ${objRes.counter}`
   console.log('Render: setBtnText', bucket);
-  // diff 不更新 子组件，不是本次的重点
-  // 嵌套了
-  effect(function setInputValue() {
-    console.log('Render: setInputValue', bucket);
-    let input = document.querySelector('#inputEl')
-    input.value = objRes.inputVal
-  })
-  
-  // 当 88行放99行的时候神奇的事情发生了
-  btn.innerHTML = `count is ${objRes.counter}`
+  btn.innerHTML = `count is ${++objRes.counter}`
 }
 
