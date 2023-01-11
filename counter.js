@@ -15,7 +15,7 @@ function clearUp (proxyFn) {
   proxyFn.deps.length = 0
 }
 
-function effect(fn) {
+function effect(fn, opt = {}) {
   // 代理一层 方便存储 被引用的set集合方便到时候清除
   let proxyFn = () => { 
     clearUp(proxyFn)
@@ -26,6 +26,7 @@ function effect(fn) {
     currentEffect = effectStack[effectStack.length - 1]
 
   }
+  proxyFn.opt = opt
   proxyFn.deps = []
   proxyFn()
 }
@@ -55,8 +56,10 @@ function trigger(target, key) {
     let depsToRun = new Set(deps)
 
     depsToRun.forEach(fn => {
-      fn !== currentEffect && 
-      fn()
+      // 模版中进行设置操作
+      if (fn === currentEffect) return
+      fn.opt.scheduler ? fn.opt.scheduler(fn) : fn()
+
     })
   }
 }
@@ -81,12 +84,19 @@ export function setupCounter() {
   btn.addEventListener('click', () => {
     counterCache++
     objRes.counter = counterCache
+    // objRes.counter = counterCache
+    // objRes.counter = counterCache
+    // objRes.counter = counterCache
+    // objRes.counter = counterCache
+    console.log('click over');
   })
-  effect(setBtnText)
+  effect(setBtnText, {
+    scheduler: (fn)=> { Promise.resolve().then(() => fn()) }
+  })
 }
 
 export function setBtnText() {
   console.log('Render: setBtnText', bucket);
-  btn.innerHTML = `count is ${++objRes.counter}`
+  btn.innerHTML = `count is ${objRes.counter}`
 }
 
